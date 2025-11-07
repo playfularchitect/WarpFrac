@@ -1,6 +1,7 @@
 # WarpFrac
 Fast Provably Exact Math
 
+November 7th, 2025
 
 ![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 
