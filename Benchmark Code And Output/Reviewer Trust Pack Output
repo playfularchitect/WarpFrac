@@ -1,0 +1,102 @@
+==========================================================================================================
+MODULE PB-TRUST-PACK — Repro/Provenance/Stats/Nsight/Clocks
+==========================================================================================================
+
+==========================================================================================================
+MACRO: 3× measurement (per_gemm_ms & T-ops/s)
+==========================================================================================================
+[Run 1] per_gemm_ms=0.894  Tops=300383.740
+[Run 2] per_gemm_ms=0.892  Tops=301005.130
+[Run 3] per_gemm_ms=0.892  Tops=301031.870
+
+--- Macro 3× stats ---
+per_gemm_ms  : mean=0.893  ±0.001  (min=0.892, max=0.894)
+T-ops/s      : mean=300806.913  ±299.428  (min=300383.740, max=301031.870)
+
+==========================================================================================================
+CLOCK/POWER LOG (nvidia-smi) — macro single run with sampling
+==========================================================================================================
+Interpretation: (no samples)
+
+==========================================================================================================
+NSIGHT COMPUTE CAPTURES (macro & micro)
+==========================================================================================================
+Collecting macro .ncu-rep …
+Collecting micro(256³) .ncu-rep …
+NSight artifacts in: /content/trust_pack  (open .ncu-rep in Nsight Compute UI to export HTML).
+
+==========================================================================================================
+PROVENANCE — environment + binaries + command lines
+==========================================================================================================
+
+==========================================================================================================
+HUMAN SUMMARY (also appended to MD)
+==========================================================================================================
+
+---
+## Reviewer Trust Pack
+_Generated: 2025-11-07T05:57:03+00:00Z_
+
+**Macro stability (3×):**
+
+- per_gemm_ms: mean=0.893 ms  ±0.001  (min=0.892, max=0.894)  
+- T-ops/s    : mean=300806.913  ±299.428  (min=300383.740, max=301031.870)
+
+**Clock/Power log:** sampled with `nvidia-smi` during macro run.  
+_Interpretation:_ no samples  
+_Tail of log (`/content/trust_pack/clocks_power_log.csv`):_
+
+```
+2025/11/07 05:57:02.252, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 100 %, 14 %, 87.57 W
+2025/11/07 05:57:02.459, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 100 %, 3 %, 84.39 W
+2025/11/07 05:57:02.668, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 64 %, 2 %, 80.61 W
+2025/11/07 05:57:02.875, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 0 %, 0 %, 80.01 W
+2025/11/07 05:57:03.082, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 0 %, 0 %, 79.15 W
+2025/11/07 05:57:03.291, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 0 %, 0 %, 84.06 W
+2025/11/07 05:57:03.568, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 0 %, 0 %, 77.70 W
+2025/11/07 05:57:03.776, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 0 %, 0 %, 82.93 W
+```
+
+**Nsight Compute captures:**
+- Macro: `/content/trust_pack/macro_run.ncu-rep` (open in Nsight Compute UI to export HTML)
+- Micro 256³: `/content/trust_pack/micro_2563.ncu-rep` (open in Nsight Compute UI to export HTML)
+
+**Provenance (short):**
+
+```json
+{
+  "timestamp_utc": "2025-11-07T05:57:03+00:00Z",
+  "binaries": [
+    {
+      "path": "/content/fx_int8_kpanel_tiled_swarm_v1",
+      "sha256": "2b21089a0038a633da24a83654488b3169e6b195b563d31080df35acb4e015ee"
+    },
+    {
+      "path": "/content/pb4_gmp_vs_gpu_micro",
+      "sha256": "5e6cc6835a8d052076f17254ad9d54e3aa24e6d740bfbb948bd3847b1684b935"
+    }
+  ],
+  "nvcc_version_line": [
+    "nvcc: NVIDIA (R) Cuda compiler driver"
+  ],
+  "macro_cmd": "/content/fx_int8_kpanel_tiled_swarm_v1 --m 5120 --n 5120 --k 5120 --streams 32 --graphNodes 64 --batchPerNode 4 --tileK 1280 --epochs 1 --warmup 3 --tryAlgos 16 --workspaceMB 1024 --validate 0 --fracA 4 --fracB 4"
+}
+```
+Full provenance JSON: `/content/trust_pack/provenance.json`  
+
+**What this number is NOT:**
+- Not FP64 throughput; numbers are INT8×INT8→INT32 accumulate.
+- Not multi-GPU aggregate; single-GPU A100 result.
+- Not an exhaustive proof for all inputs; micro exactness is GMP-checked on representative shapes/seeds.
+
+**Repro (optional, ~5 minutes):** Dockerfile + `run_short.sh` in the trust_pack directory.
+
+**Units:** Ops per GEMM = 2·M·N·K (ops in 10^0; reported rates in T = 10^12).
+**Macro exactness:** validated via GMP sampled witnesses — **PASS (mismatches=0)**.
+
+
+=== APPENDED trust pack to: /content/public_bench_report.md
+
+==========================================================================================================
+PB-TRUST-PACK — DONE
+==========================================================================================================
