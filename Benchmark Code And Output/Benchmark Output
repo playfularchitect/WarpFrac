@@ -49,21 +49,21 @@ Graph capture per stream (tiled over K, multi-C per node)
 =====================================================================================
 K-panel tiled swarm run
 =====================================================================================
-EPOCH 1 :: total_gemms=32768  elapsed=29.270s  per_gemm=0.893 ms  logical=300511.74 T-ops/s
-EPOCH 2 :: total_gemms=65536  elapsed=58.492s  per_gemm=0.893 ms  logical=300762.74 T-ops/s
+EPOCH 1 :: total_gemms=32768  elapsed=29.288s  per_gemm=0.894 ms  logical=300334.06 T-ops/s
+EPOCH 2 :: total_gemms=65536  elapsed=58.616s  per_gemm=0.894 ms  logical=300127.65 T-ops/s
 
 =====================================================================================
 SUMMARY :: K-PANEL TILED SWARM
 =====================================================================================
-ts=2025-11-07T05:36:29Z  M=5120 N=5120 K=5120  streams=32  nodes=64  batch_per_node=4  tileK=1280  panels=4  epochs=2
-total_gemms(counting panels)=65536  elapsed_total=58.492s  per_gemm=0.893 ms  logical_throughput=300.76 T-ops/s
+ts=2025-11-07T10:02:26Z  M=5120 N=5120 K=5120  streams=32  nodes=64  batch_per_node=4  tileK=1280  panels=4  epochs=2
+total_gemms(counting panels)=65536  elapsed_total=58.616s  per_gemm=0.894 ms  logical_throughput=300.13 T-ops/s
 layout=ROW  algo_index=0  ws_bytes=1073741824  Dyadic: C_real = int32 * 2^{-(8)} (exact)
 
 =====================================================================================
 VALIDATOR — START (micro GEMM + exactness)
 =====================================================================================
 CPU int32 vs GPU int32   : PASS  (mismatches=0)
-CPU reference elapsed    : 14.160 ms  (shape 256x256x256)
+CPU reference elapsed    : 14.206 ms  (shape 256x256x256)
 
 =====================================================================================
 GMP SAMPLED WITNESS (exact integers + dyadic rationals)
@@ -98,9 +98,9 @@ PB-4 :: GMP vs GPU Micro Benchmark
 PB-4 RESULTS :: micro size + exactness
 =====================================================================================
 Shape: M=128 N=128 K=128   fracA=4 fracB=4   (dyadic shift = 8)
-GPU int8->int32:  5.188 ms   throughput = 0.001 T-ops/s
-GMP mpz exact  :  42.084 ms   throughput = 0.099665 G-ops/s
-Speedup (GPU / GMP) = 8.11 x
+GPU int8->int32:  4.944 ms   throughput = 0.001 T-ops/s
+GMP mpz exact  :  42.306 ms   throughput = 0.099142 G-ops/s
+Speedup (GPU / GMP) = 8.56 x
 Exactness (bit-for-bit C_int32): PASS  (mismatches=0)
 
 =====================================================================================
@@ -126,9 +126,9 @@ PB-4 :: GMP vs GPU Micro Benchmark
 PB-4 RESULTS :: micro size + exactness
 =====================================================================================
 Shape: M=192 N=192 K=192   fracA=4 fracB=4   (dyadic shift = 8)
-GPU int8->int32:  5.037 ms   throughput = 0.003 T-ops/s
-GMP mpz exact  :  141.198 ms   throughput = 0.100255 G-ops/s
-Speedup (GPU / GMP) = 28.03 x
+GPU int8->int32:  5.015 ms   throughput = 0.003 T-ops/s
+GMP mpz exact  :  140.976 ms   throughput = 0.100412 G-ops/s
+Speedup (GPU / GMP) = 28.11 x
 Exactness (bit-for-bit C_int32): PASS  (mismatches=0)
 
 =====================================================================================
@@ -154,9 +154,9 @@ PB-4 :: GMP vs GPU Micro Benchmark
 PB-4 RESULTS :: micro size + exactness
 =====================================================================================
 Shape: M=256 N=256 K=256   fracA=4 fracB=4   (dyadic shift = 8)
-GPU int8->int32:  5.058 ms   throughput = 0.007 T-ops/s
-GMP mpz exact  :  334.395 ms   throughput = 0.100344 G-ops/s
-Speedup (GPU / GMP) = 66.12 x
+GPU int8->int32:  5.063 ms   throughput = 0.007 T-ops/s
+GMP mpz exact  :  335.310 ms   throughput = 0.100070 G-ops/s
+Speedup (GPU / GMP) = 66.23 x
 Exactness (bit-for-bit C_int32): PASS  (mismatches=0)
 
 =====================================================================================
@@ -205,9 +205,9 @@ PB-6 THROUGHPUT :: replay timing
 CUDA Graph: capture 1 matmul, replay reps
 =====================================================================================
 Shape: M=256 N=256 K=256   reps=500   graph=1   warmup=5   shift=8
-GPU replay window: elapsed=7.377 ms  avg_per_gemm=0.014754 ms  throughput=2.274 T-ops/s
-GMP (one GEMM)   : elapsed=313.062 ms  throughput=0.107181 G-ops/s
-Speedup (GPU/GMP per-GEMM rate) = 21219.09 x
+GPU replay window: elapsed=8.280 ms  avg_per_gemm=0.016560 ms  throughput=2.026 T-ops/s
+GMP (one GEMM)   : elapsed=312.940 ms  throughput=0.107223 G-ops/s
+Speedup (GPU/GMP per-GEMM rate) = 18897.23 x
 
 =====================================================================================
 PB-6 DONE
@@ -224,12 +224,12 @@ MD  : /content/public_bench_report.md
 ==========================================================================================================
 PUBLIC BENCH COMPLETE — HEADLINES
 ==========================================================================================================
-MACRO T-ops/s : 300.76  (expected ~300 on A100)
+MACRO T-ops/s : 300.13  (expected ~300 on A100)
 MICRO H2H     :
-  - 128³ : GPU 5.188 ms (0.001000 T-ops/s)  |  GMP 42.084 ms (0.099665 G-ops/s)  |  8.11×  | PASS
-  - 192³ : GPU 5.037 ms (0.003000 T-ops/s)  |  GMP 141.198 ms (0.100255 G-ops/s)  |  28.03×  | PASS
-  - 256³ : GPU 5.058 ms (0.007000 T-ops/s)  |  GMP 334.395 ms (0.100344 G-ops/s)  |  66.12×  | PASS
-MICRO AMORT.  : 256³ avg_per_gemm=0.014754 ms, 2.274 T-ops/s, speedup=21219.09×
+  - 128³ : GPU 4.944 ms (0.001000 T-ops/s)  |  GMP 42.306 ms (0.099142 G-ops/s)  |  8.56×  | PASS
+  - 192³ : GPU 5.015 ms (0.003000 T-ops/s)  |  GMP 140.976 ms (0.100412 G-ops/s)  |  28.11×  | PASS
+  - 256³ : GPU 5.063 ms (0.007000 T-ops/s)  |  GMP 335.310 ms (0.100070 G-ops/s)  |  66.23×  | PASS
+MICRO AMORT.  : 256³ avg_per_gemm=0.016560 ms, 2.026 T-ops/s, speedup=18897.23×
 
 ==========================================================================================================
 DONE — Share /content/public_bench_report.md
@@ -278,11 +278,11 @@ Updated precise Tops for 5 rows and rewrote CSV -> /content/public_bench_report.
 Refreshed Micro table in MD -> /content/public_bench_report.md
 
 After fix — recomputed Tops from times:
-macro            5120x5120x5120  Tops=300.599614782 (from time)
-micro            128x128x128  Tops=0.000808463 (from time)
-micro            192x192x192  Tops=0.002810359 (from time)
-micro            256x256x256  Tops=0.006633933 (from time)
-micro_amortized  256x256x256  Tops=2.274259997 (from time)
+macro            5120x5120x5120  Tops=300.263373602 (from time)
+micro            128x128x128  Tops=0.000848362 (from time)
+micro            192x192x192  Tops=0.002822687 (from time)
+micro            256x256x256  Tops=0.006627381 (from time)
+micro_amortized  256x256x256  Tops=2.026233816 (from time)
 
 ==========================================================================================================
 PB-OPS-CLEAN — DONE
@@ -297,11 +297,11 @@ CSV found — using recorded results.
 OPS RECOUNT AUDIT (post-fix; all Tops recomputed from time)
 =====================================================================================
 section          shape              old_Tops       new_Tops abs_rel_err
-macro            5120x5120x5120  300.599614782  300.599614782    0.0000%
-micro            128x128x128     0.000808463    0.000808463    0.0000%
-micro            192x192x192     0.002810359    0.002810359    0.0000%
-micro            256x256x256     0.006633933    0.006633933    0.0000%
-micro_amortized  256x256x256     2.274259997    2.274259997    0.0000%
+macro            5120x5120x5120  300.263373602  300.263373602    0.0000%
+micro            128x128x128     0.000848362    0.000848362    0.0001%
+micro            192x192x192     0.002822687    0.002822687    0.0000%
+micro            256x256x256     0.006627381    0.006627381    0.0000%
+micro_amortized  256x256x256     2.026233816    2.026233816    0.0000%
 
 Refreshed Micro table in MD -> /content/public_bench_report.md
 Appended Ops Accounting appendix -> /content/ops_accounting.md
@@ -332,11 +332,11 @@ Precision & Scaling:
 -------------------------------------------------------------------------------------
 section          shape              GPU ms      RAW T-MAC/s      RAW T-ops/s   exact
 -------------------------------------------------------------------------------------
-macro            5120×5120×5120      0.893    150.299807391    300.599614782        
-micro            128×128×128         5.188      0.000404231      0.000808463    PASS
-micro            192×192×192         5.037      0.001405179      0.002810359    PASS
-micro            256×256×256         5.058      0.003316966      0.006633933    PASS
-micro_amortized  256×256×256         0.015      1.137129999      2.274259997    PASS
+macro            5120×5120×5120      0.894    150.131686801    300.263373602        
+micro            128×128×128         4.944      0.000424181      0.000848362    PASS
+micro            192×192×192         5.015      0.001411344      0.002822687    PASS
+micro            256×256×256         5.063      0.003313691      0.006627381    PASS
+micro_amortized  256×256×256         0.017      1.013116908      2.026233816    PASS
 -------------------------------------------------------------------------------------
 
 Timing Source (device-side):
