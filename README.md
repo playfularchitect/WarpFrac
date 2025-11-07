@@ -5,7 +5,8 @@ November 7th, 2025
 
 ![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 
-This repository contains the source and benchmarks for **WarpFrac**, a CUDA kernel that performs bit-for-bit exact matrix multiplication at speeds over **21,000x faster than GMP** (the arbitrary-precision gold standard).
+This repository contains the source and benchmarks for **WarpFrac**, a CUDA kernel series that performs bit-for-bit exact matrix multiplication at speeds over **21,000x faster than GMP** (the arbitrary-precision gold standard).
+
 
 This is not a theoretical claim. This is a replicable benchmark.
 
