@@ -9,7 +9,7 @@ This repository contains the source and benchmarks for **WarpFrac**, a CUDA kern
 
 This is not a theoretical claim. This is a replicable benchmark.
 
-I am releasing this for expert validation and to find applications for this new capability.
+I am releasing this for expert validation and to find applications for this new capability and my problem solving skills. 
 
 ##  Replicate it Yourself (1-Click)
 
@@ -20,13 +20,6 @@ You don't have to trust me. Run the benchmark yourself on a Google Colab instanc
 
 ---
 
-## The Proof: Benchmark Logs
-
-The kernel (the GPU code) is designed to perform perfectly exact fraction math.
-It  uses tiny, fast whole numbers (int8s) as inputs, but it treats them as fractions. The "$2^{-4}$" scaling means the number 5 is treated as the fraction 5/16.It then multiplies and adds all these fractions, accumulating the result into a much larger integer container (int32) that is guaranteed to be big enough to hold the final answer with no rounding errors.
-
-
-The benchmark was run on a single **NVIDIA A100-SXM4-40GB GPU**.
 
 I can make it even faster. Much faster. 
 
