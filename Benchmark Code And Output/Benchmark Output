@@ -1,0 +1,379 @@
+==========================================================================================================
+MODULE PB-ALL — ONE-CLICK PUBLIC BENCH
+==========================================================================================================
+Python  : 3.12.12
+OS      : Linux-6.6.105+-x86_64-with-glibc2.35
+CUDA?   : True
+
+=== APT: installing libgmp-dev
+
+==========================================================================================================
+WRITING PB-1 (Macro arena + validator)
+==========================================================================================================
+=== PB-1 WRITTEN /content/fx_int8_kpanel_tiled_swarm_v1.cu
+
+=== COMPILING PB-1
+
+
+==========================================================================================================
+WRITING PB-4 (Micro H2H vs GMP exact)
+==========================================================================================================
+=== PB-4 WRITTEN /content/pb4_gmp_vs_gpu_micro.cu
+
+=== COMPILING PB-4
+
+
+==========================================================================================================
+WRITING PB-6 (Micro throughput: graph + reps) 
+==========================================================================================================
+=== PB-6 WRITTEN /content/pb6_micro_reps_graph.cu
+
+=== COMPILING PB-6
+
+
+==========================================================================================================
+RUNNING PB-1 — Macro Arena
+==========================================================================================================
+
+=====================================================================================
+MODULE L — K-Panel Tiled Swarm (ROW-only, exact, public bench build)
+=====================================================================================
+Device=NVIDIA A100-SXM4-40GB CC=8.0 SMs=108 GlobalMem=40506 MB
+heuristics(found, ws=1073741824) = 2
+picked algo index = 0 (ws=1073741824)  panels=4  tileK=1280
+
+=====================================================================================
+Graph capture per stream (tiled over K, multi-C per node)
+=====================================================================================
+
+=====================================================================================
+K-panel tiled swarm run
+=====================================================================================
+EPOCH 1 :: total_gemms=32768  elapsed=29.270s  per_gemm=0.893 ms  logical=300511.74 T-ops/s
+EPOCH 2 :: total_gemms=65536  elapsed=58.492s  per_gemm=0.893 ms  logical=300762.74 T-ops/s
+
+=====================================================================================
+SUMMARY :: K-PANEL TILED SWARM
+=====================================================================================
+ts=2025-11-07T05:36:29Z  M=5120 N=5120 K=5120  streams=32  nodes=64  batch_per_node=4  tileK=1280  panels=4  epochs=2
+total_gemms(counting panels)=65536  elapsed_total=58.492s  per_gemm=0.893 ms  logical_throughput=300.76 T-ops/s
+layout=ROW  algo_index=0  ws_bytes=1073741824  Dyadic: C_real = int32 * 2^{-(8)} (exact)
+
+=====================================================================================
+VALIDATOR — START (micro GEMM + exactness)
+=====================================================================================
+CPU int32 vs GPU int32   : PASS  (mismatches=0)
+CPU reference elapsed    : 14.160 ms  (shape 256x256x256)
+
+=====================================================================================
+GMP SAMPLED WITNESS (exact integers + dyadic rationals)
+=====================================================================================
+Entry (   0,   0): C_int32=-73289  [GMP eq=YES]  C_real = -73289/256
+Entry (   0,  32): C_int32=136774  [GMP eq=YES]  C_real = 68387/128
+Entry (   0,  64): C_int32=-31999  [GMP eq=YES]  C_real = -31999/256
+Entry (   0,  96): C_int32=23676  [GMP eq=YES]  C_real = 5919/64
+Entry (   0, 128): C_int32=-141046  [GMP eq=YES]  C_real = -70523/128
+Entry (   0, 160): C_int32=50359  [GMP eq=YES]  C_real = 50359/256
+Entry (   0, 192): C_int32=17680  [GMP eq=YES]  C_real = 1105/16
+Entry (   0, 224): C_int32=83640  [GMP eq=YES]  C_real = 10455/32
+
+=====================================================================================
+VALIDATOR — END
+=====================================================================================
+
+=====================================================================================
+MODULE L — END (public bench build)
+=====================================================================================
+
+
+==========================================================================================================
+RUNNING PB-4 — Micro H2H vs GMP (128³, 192³, 256³)
+==========================================================================================================
+
+=====================================================================================
+PB-4 :: GMP vs GPU Micro Benchmark
+=====================================================================================
+
+=====================================================================================
+PB-4 RESULTS :: micro size + exactness
+=====================================================================================
+Shape: M=128 N=128 K=128   fracA=4 fracB=4   (dyadic shift = 8)
+GPU int8->int32:  5.188 ms   throughput = 0.001 T-ops/s
+GMP mpz exact  :  42.084 ms   throughput = 0.099665 G-ops/s
+Speedup (GPU / GMP) = 8.11 x
+Exactness (bit-for-bit C_int32): PASS  (mismatches=0)
+
+=====================================================================================
+PB-4 MPQ EXAMPLES (dyadic rationals)
+=====================================================================================
+C[   0,   0] int32=-8188   C_real=-2047/64
+C[  21,  42] int32=31289   C_real=31289/256
+C[  42,  84] int32=-64593   C_real=-64593/256
+C[  63, 126] int32=41221   C_real=41221/256
+C[  85,  40] int32=-62714   C_real=-31357/128
+C[ 106,  82] int32=45047   C_real=45047/256
+
+=====================================================================================
+PB-4 DONE
+=====================================================================================
+
+
+=====================================================================================
+PB-4 :: GMP vs GPU Micro Benchmark
+=====================================================================================
+
+=====================================================================================
+PB-4 RESULTS :: micro size + exactness
+=====================================================================================
+Shape: M=192 N=192 K=192   fracA=4 fracB=4   (dyadic shift = 8)
+GPU int8->int32:  5.037 ms   throughput = 0.003 T-ops/s
+GMP mpz exact  :  141.198 ms   throughput = 0.100255 G-ops/s
+Speedup (GPU / GMP) = 28.03 x
+Exactness (bit-for-bit C_int32): PASS  (mismatches=0)
+
+=====================================================================================
+PB-4 MPQ EXAMPLES (dyadic rationals)
+=====================================================================================
+C[   0,   0] int32=-44682   C_real=-22341/128
+C[  32,   0] int32=45766   C_real=22883/128
+C[  64,   0] int32=-20511   C_real=-20511/256
+C[  96,   0] int32=-29605   C_real=-29605/256
+C[ 128,   0] int32=91352   C_real=11419/32
+C[ 160,   0] int32=15501   C_real=15501/256
+
+=====================================================================================
+PB-4 DONE
+=====================================================================================
+
+
+=====================================================================================
+PB-4 :: GMP vs GPU Micro Benchmark
+=====================================================================================
+
+=====================================================================================
+PB-4 RESULTS :: micro size + exactness
+=====================================================================================
+Shape: M=256 N=256 K=256   fracA=4 fracB=4   (dyadic shift = 8)
+GPU int8->int32:  5.058 ms   throughput = 0.007 T-ops/s
+GMP mpz exact  :  334.395 ms   throughput = 0.100344 G-ops/s
+Speedup (GPU / GMP) = 66.12 x
+Exactness (bit-for-bit C_int32): PASS  (mismatches=0)
+
+=====================================================================================
+PB-4 MPQ EXAMPLES (dyadic rationals)
+=====================================================================================
+C[   0,   0] int32=-73289   C_real=-73289/256
+C[  42, 170] int32=43845   C_real=43845/256
+C[  85,  84] int32=127827   C_real=127827/256
+C[ 127, 254] int32=159434   C_real=79717/128
+C[ 170, 168] int32=-70952   C_real=-8869/32
+C[ 213,  82] int32=-5279   C_real=-5279/256
+
+=====================================================================================
+PB-4 DONE
+=====================================================================================
+
+
+==========================================================================================================
+RUNNING PB-6 — Micro Amortized (graph+reps) at 256³
+==========================================================================================================
+
+=====================================================================================
+PB-6 :: Micro Throughput Booster (reps/graph) + Exactness (GMP)
+=====================================================================================
+
+=====================================================================================
+PB-6 CORRECTNESS :: GPU vs GMP (one-shot)
+=====================================================================================
+Exactness (bit-for-bit C_int32): PASS  (mismatches=0)
+
+=====================================================================================
+PB-6 MPQ EXAMPLES (dyadic)
+=====================================================================================
+C[   0,   0] int32=-73289   C_real=-73289/256
+C[  42, 170] int32=43845   C_real=43845/256
+C[  85,  84] int32=127827   C_real=127827/256
+C[ 127, 254] int32=159434   C_real=79717/128
+C[ 170, 168] int32=-70952   C_real=-8869/32
+C[ 213,  82] int32=-5279   C_real=-5279/256
+
+=====================================================================================
+PB-6 THROUGHPUT :: replay timing
+=====================================================================================
+
+=====================================================================================
+CUDA Graph: capture 1 matmul, replay reps
+=====================================================================================
+Shape: M=256 N=256 K=256   reps=500   graph=1   warmup=5   shift=8
+GPU replay window: elapsed=7.377 ms  avg_per_gemm=0.014754 ms  throughput=2.274 T-ops/s
+GMP (one GEMM)   : elapsed=313.062 ms  throughput=0.107181 G-ops/s
+Speedup (GPU/GMP per-GEMM rate) = 21219.09 x
+
+=====================================================================================
+PB-6 DONE
+=====================================================================================
+
+
+==========================================================================================================
+WRITING ARTIFACTS — CSV + Markdown
+==========================================================================================================
+Artifacts:
+CSV : /content/public_bench_report.csv
+MD  : /content/public_bench_report.md
+
+==========================================================================================================
+PUBLIC BENCH COMPLETE — HEADLINES
+==========================================================================================================
+MACRO T-ops/s : 300.76  (expected ~300 on A100)
+MICRO H2H     :
+  - 128³ : GPU 5.188 ms (0.001000 T-ops/s)  |  GMP 42.084 ms (0.099665 G-ops/s)  |  8.11×  | PASS
+  - 192³ : GPU 5.037 ms (0.003000 T-ops/s)  |  GMP 141.198 ms (0.100255 G-ops/s)  |  28.03×  | PASS
+  - 256³ : GPU 5.058 ms (0.007000 T-ops/s)  |  GMP 334.395 ms (0.100344 G-ops/s)  |  66.12×  | PASS
+MICRO AMORT.  : 256³ avg_per_gemm=0.014754 ms, 2.274 T-ops/s, speedup=21219.09×
+
+==========================================================================================================
+DONE — Share /content/public_bench_report.md
+==========================================================================================================
+
+==========================================================================================================
+MODULE PB-POLISH-1 — Provenance + Arch Autodetect + (Optional) Rebuild & Bundle
+==========================================================================================================
+=== COMPILING probe (env/arch)
+
+=== RUNNING probe
+{
+  "cuda_driver": 12040,
+  "cuda_runtime": 12050,
+  "device_name": "NVIDIA A100-SXM4-40GB",
+  "sm_major": 8,
+  "sm_minor": 0,
+  "multiProcessorCount": 108,
+  "totalGlobalMem_MB": 40506,
+  "memoryBusWidth_bits": 5120,
+  "memoryClockRate_khz": 1215000,
+  "coreClockRate_khz": 1410000,
+  "cublas_version": 120503,
+  "cublasLt_version": 120503,
+  "recommended_arch": "sm_80"
+}
+
+=== META written: /content/public_bench_meta.json
+=== Appended Provenance section to: /content/public_bench_report.md
+=== Bundle created: /content/public_bench_bundle.tar.gz
+
+==========================================================================================================
+POLISH DONE — Share these:
+==========================================================================================================
+Report MD : /content/public_bench_report.md
+Report CSV: /content/public_bench_report.csv
+Meta JSON : /content/public_bench_meta.json
+Bundle    : /content/public_bench_bundle.tar.gz
+Suggested NVCC flag for others: -arch=sm_80
+==========================================================================================================
+
+==========================================================================================================
+MODULE PB-OPS-CLEAN — De-round micro throughputs + refresh MD table
+==========================================================================================================
+Updated precise Tops for 5 rows and rewrote CSV -> /content/public_bench_report.csv
+Refreshed Micro table in MD -> /content/public_bench_report.md
+
+After fix — recomputed Tops from times:
+macro            5120x5120x5120  Tops=300.599614782 (from time)
+micro            128x128x128  Tops=0.000808463 (from time)
+micro            192x192x192  Tops=0.002810359 (from time)
+micro            256x256x256  Tops=0.006633933 (from time)
+micro_amortized  256x256x256  Tops=2.274259997 (from time)
+
+==========================================================================================================
+PB-OPS-CLEAN — DONE
+==========================================================================================================
+
+==========================================================================================================
+MODULE PB-OPS-FINAL — Ops Accounting + Precision Fix
+==========================================================================================================
+CSV found — using recorded results.
+
+=====================================================================================
+OPS RECOUNT AUDIT (post-fix; all Tops recomputed from time)
+=====================================================================================
+section          shape              old_Tops       new_Tops abs_rel_err
+macro            5120x5120x5120  300.599614782  300.599614782    0.0000%
+micro            128x128x128     0.000808463    0.000808463    0.0000%
+micro            192x192x192     0.002810359    0.002810359    0.0000%
+micro            256x256x256     0.006633933    0.006633933    0.0000%
+micro_amortized  256x256x256     2.274259997    2.274259997    0.0000%
+
+Refreshed Micro table in MD -> /content/public_bench_report.md
+Appended Ops Accounting appendix -> /content/ops_accounting.md
+
+==========================================================================================================
+PB-OPS-FINAL — DONE
+==========================================================================================================
+
+==========================================================================================================
+MODULE PB-OPS-CONVENTIONS — Raw MAC/s, T-ops/s, Effective Ops, Precision & Checks
+==========================================================================================================
+
+=====================================================================================
+THROUGHPUT CONVENTIONS (MAC vs FLOPs) + RESULTS (derived from time)
+=====================================================================================
+- MAC definition: one multiply–accumulate. We report RAW T-MAC/s (hardware rate).
+- T-ops/s = 2 × T-MAC/s if you count multiply and add separately.
+- Algorithmic multiplier: k = 1 (no algorithmic scaling). Set env ALG_K to add effective ops columns.
+
+Precision & Scaling:
+- Arithmetic: INT8 × INT8 → INT32 accumulate; dyadic shift = 2^-(fracA+fracB) with fracA=4, fracB=4 ⇒ 2^-8.
+- Overflow guardrail (clamp ±120): |∑ a_k b_k| ≤ K·(120^2) must be < 2^31. Shapes:
+  • 5120×5120×5120   K=5120    bound≤73,728,000    int32_safe=True
+  • 128×128×128      K=128     bound≤1,843,200     int32_safe=True
+  • 192×192×192      K=192     bound≤2,764,800     int32_safe=True
+  • 256×256×256      K=256     bound≤3,686,400     int32_safe=True
+
+-------------------------------------------------------------------------------------
+section          shape              GPU ms      RAW T-MAC/s      RAW T-ops/s   exact
+-------------------------------------------------------------------------------------
+macro            5120×5120×5120      0.893    150.299807391    300.599614782        
+micro            128×128×128         5.188      0.000404231      0.000808463    PASS
+micro            192×192×192         5.037      0.001405179      0.002810359    PASS
+micro            256×256×256         5.058      0.003316966      0.006633933    PASS
+micro_amortized  256×256×256         0.015      1.137129999      2.274259997    PASS
+-------------------------------------------------------------------------------------
+
+Timing Source (device-side):
+- PB-4 uses CUDA events: YES
+- PB-6 uses CUDA events: YES
+
+Quick Verification Checklist (copy/paste):
+1) Nsight Compute — tensor/SM/memory/occupancy (macro PB-1):
+   ncu --set full --metrics \
+     sm__pipe_tensor_cycles_active.avg.pct,\
+     sm__inst_executed.avg.pct,\
+     dram__throughput.avg.pct,\
+     sm__warps_active.avg.pct_of_peak_sustained_active,\
+     sm__maximum_warps_per_active_cycle_pct,\
+     sm__average_active_threads_per_warp,\
+     sm__throughput.avg.pct_of_peak_sustained_active,\
+     achieved_occupancy \
+     --target-processes all --launch-count 1 \
+     /content/fx_int8_kpanel_tiled_swarm_v1 --m 5120 --n 5120 --k 5120 --streams 32 --graphNodes 64 --batchPerNode 4 --tileK 1280 --epochs 1 --warmup 3 --tryAlgos 16 --workspaceMB 1024 --validate 0
+2) Nsight Compute — micro PB-4 (256³):
+   ncu --set full --metrics sm__pipe_tensor_cycles_active.avg.pct,sm__inst_executed.avg.pct,dram__throughput.avg.pct,achieved_occupancy \
+     --target-processes all /content/pb4_gmp_vs_gpu_micro --m 256 --n 256 --k 256 --gmpPrint 0
+3) Clock sampling during a run:
+   nvidia-smi --query-gpu=name,clocks.gr,clocks.mem,pstate --format=csv -lms 200 > clocks_log.csv &
+   SAMPLER_PID=$!
+   /content/fx_int8_kpanel_tiled_swarm_v1 --m 5120 --n 5120 --k 5120 --streams 32 --graphNodes 64 --batchPerNode 4 --tileK 1280 --epochs 2 --warmup 6 --tryAlgos 64 --workspaceMB 1024 --validate 0
+   kill ${SAMPLER_PID}
+
+Current clocks sample (best-effort):
+```
+NVIDIA A100-SXM4-40GB, 1095 MHz, 1215 MHz, P0
+```
+
+=== WROTE appendix: /content/throughput_conventions.md
+=== APPENDED section to: /content/public_bench_report.md
+=== CHECKLIST written: /content/verification_checklist.txt
+
+==========================================================================================================
+PB-OPS-CONVENTIONS — DONE
+==========================================================================================================
