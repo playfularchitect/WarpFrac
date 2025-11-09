@@ -21,6 +21,27 @@ You don't have to trust me. Run the benchmark yourself on a Google Colab instanc
 
 ---
 
+Where GMP is used & why it matters
+
+I do INT8×INT8 → INT32 accumulate (exact integers) on the GPU (via cuBLASLt).
+
+GMP is not our performance target, it’s the ground truth validator. 
+In the public bench we compute the same GEMM on CPU with GMP integers and check bit-for-bit equality of the INT32 output, plus print dyadic rationals (real view = int/2^(fracA+fracB), here 2^-8). 
+This keeps the “exactness” claim auditable.
+
+What the speedups are relative to
+
+The “speedup” lines compare the GPU to a CPU GMP reference (just to show correctness + scale). The real throughput headline is the GPU number:
+
+Macro (5120³, A100-SXM4-40GB): ~300.26 T-ops/s (ops = 2×M×N×K), per-gemm 0.894 ms.
+
+Micro amortized (256³, CUDA Graph replay): ~2.026 T-ops/s, avg per-gemm 0.01656 ms.
+
+Micro H2H (128³/192³/256³) all PASS exactness vs GMP.
+
+---
+
+
 
 I can make it even faster. Much faster. 
 
