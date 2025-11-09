@@ -94,7 +94,7 @@ Timing: adjust warmup/reps; CUDA Graphs are used for stable amortized timing.
 
 Validation: enable/disable validator blocks and GMP witness sampling.
 ---
-TL;DR (for READMEs & slides)
+TL;DR 
 
 WarpFrac — integer-exact INT8 matmul at GPU speed.
 On A100 (5120³), INT8→INT32 exact achieves ~300 T-ops/s, outpacing FP16 at ~236 TFLOPS and TF32 at ~117 TFLOPS.
