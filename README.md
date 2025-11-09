@@ -29,7 +29,7 @@ GMP is not our performance target, it’s the ground truth validator.
 In the public bench we compute the same GEMM on CPU with GMP integers and check bit-for-bit equality of the INT32 output, plus print dyadic rationals (real view = int/2^(fracA+fracB), here 2^-8). 
 This keeps the “exactness” claim auditable.
 
-What the speedups are relative to
+What the speedups are relative to:
 
 The “speedup” lines compare the GPU to a CPU GMP reference (just to show correctness + scale). The real throughput headline is the GPU number:
 
