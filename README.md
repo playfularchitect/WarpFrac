@@ -101,9 +101,29 @@ On A100 (5120³), INT8→INT32 exact achieves ~300 T-ops/s, outpacing FP16 at ~2
 With realistic, non-dyadic dequant scales, FP paths show small but measurable error (rel-L2 ≈ 3e-4), while INT8→INT32 remains a provable ground truth.
 Ops are computed from time via the standard 2×M×N×K formula and reported consistently for FP and INT8.
 ---
+Errata (WarpFrac Series v1 macro throughput) — Panel Accounting
 
+In the original WarpFrac macro benchmark (M=N=K=5120, “K-panel tiled swarm”), the reported “RAW T-MAC/s” and “T-ops/s” numbers used the standard GEMM formula ops = 2 · M · N · K · (number_of_gemms) with K = 5120. However, the macro harness splits each GEMM into 4 K-panels of size tileK = 1280, and number_of_gemms counts these panels (“total_gemms(counting panels)”).
 
+This means each K-panel was credited with the ops of a full 5120³ GEMM, inflating the macro throughput by a factor of 4. The published headline:
 
+macro 5120³: 300.26 T-ops/s (150.13 T-MAC/s)
+
+should be interpreted as a logical, panel-counted throughput. The corresponding physical GEMM rates, normalized to full 5120³ MACs, are:
+
+macro 5120³: ~75 T-ops/s (~37.5 T-MAC/s)
+
+All INT8 vs FP baselines in the benchmark share the same panelized harness and ops formula, so their relative comparisons remain valid. What changes is the absolute interpretation of “RAW T-MAC/s (hardware rate)” vs A100’s theoretical INT8 peak (312 T-MAC/s, 624 T-ops/s).
+
+Future versions of WarpFrac will report both:
+
+logical_Tops (panel-counted, as in the original report), and
+
+physical_TMACs / physical_Tops (normalized to full GEMMs)
+
+so that comparisons to hardware peak specs are transparent.
+
+---
 Contact
 
 I’m releasing this for expert validation and to explore applications.
