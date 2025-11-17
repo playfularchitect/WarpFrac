@@ -1,0 +1,28 @@
+{
+  "RAW_GMAC_per_s": {
+    "mean": 209824.36000000002,
+    "stdev": 111.9257346040924,
+    "min": 209691.7,
+    "max": 209965.47
+  },
+  "per_matmul_ms": {
+    "mean": 0.6396666666666667,
+    "stdev": 0.0004714045207910321,
+    "min": 0.639,
+    "max": 0.64
+  },
+  "runs": [
+    {
+      "RAW_GMAC_per_s": 209965.47,
+      "per_matmul_ms": 0.639
+    },
+    {
+      "RAW_GMAC_per_s": 209691.7,
+      "per_matmul_ms": 0.64
+    },
+    {
+      "RAW_GMAC_per_s": 209815.91,
+      "per_matmul_ms": 0.64
+    }
+  ]
+}
