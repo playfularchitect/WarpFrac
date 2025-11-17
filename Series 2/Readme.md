@@ -45,7 +45,7 @@ Series 2 is the “clean, standard accounting” version.
 Important:
 
 - **RAW numbers** are the actual hardware work.
-- **EFFECTIVE (k=9)** is just a way of counting logical work in your encoding scheme, not extra physical flops.
+- **EFFECTIVE (k=9)** is just a way of counting logical work in my encoding scheme, not extra physical flops.
 
 
 ## What the exactness witness checks
