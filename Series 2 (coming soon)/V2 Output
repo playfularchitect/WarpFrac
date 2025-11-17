@@ -1,0 +1,288 @@
+======================================================================================================================
+MODULE FL-0 — WARPFRAC FASTLANE MACRO BENCH (5120^3 INT8xINT8->INT32, cuBLASLt)
+======================================================================================================================
+[FL-0] Wrote FASTLANE CUDA source -> /content/fastlane_best_rr_allinone.cu
+[FL-0] Compiling with: nvcc -O3 -std=c++17 -gencode=arch=compute_80,code=sm_80 /content/fastlane_best_rr_allinone.cu -lcublasLt -lcublas -o /content/fastlane_best_rr_allinone
+[FL-0] Compile OK -> /content/fastlane_best_rr_allinone
+
+----------------------------------------------------------------------------------------------------------------------
+RUNNING FASTLANE MACRO BENCH (5120^3 INT8xINT8->INT32, REPLAYS=200)
+----------------------------------------------------------------------------------------------------------------------
+cuBLAS heur (cfg: A:ROW  B:ROW(tB=T)  C:ROW): 4
+=== FASTLANE autopick(min-rr, FIX) — INT8xINT8->INT32 (cuBLASLt) ===
+Layout: A:ROW  B:ROW(tB=T)  C:ROW | REPLAYS=200 | WS_CAP=0 MB | picked_ws=0.00 MB | probe_best_ms=0.822
+RAW=187903.37 G-MAC/s
+EFFECTIVE (k=9) = 1691130.32 G-ops/s
+
+--- AUDIT: how counts are computed ---
+MACs per matmul: 5120 * 5120 * 5120 = 134217728000
+Total MACs executed: 134217728000 * 200 = 26843545600000
+Wall time (one stream): 142.858 ms | per-matmul(avg) = 0.714 ms
+RAW G-MAC/s = (26843545600000 / 0.142858) / 1e9 = 187903.37
+RAW GFLOP/s (reference) = 2 * RAW = 375806.74
+EFFECTIVE exact-ops/s = 9 * 187903.37 = 1691130.32 G-ops/s
+Buffers: |A|=26214400 B, |B|=26214400 B, |C|=104857600 B
+--------------------------------------
+
+
+======================================================================================================================
+MODULE FL-0 — DONE (Fastlane Macro Bench)
+======================================================================================================================
+
+======================================================================================================================
+MODULE FL-1B — FASTLANE TRUST PACK v2 (Macro Repro/Provenance/Clocks/Nsight)
+======================================================================================================================
+
+[FL-1B] Sanity-checking FASTLANE binary & source...
+
+----------------------------------------------------------------------------------------------------------------------
+FASTLANE MACRO: 3× measurement (RAW G-MAC/s & per-matmul avg ms)
+----------------------------------------------------------------------------------------------------------------------
+[Run 1] RAW=209629.66 G-MAC/s  per-matmul=0.640 ms
+[Run 2] RAW=209723.59 G-MAC/s  per-matmul=0.640 ms
+[Run 3] RAW=209644.75 G-MAC/s  per-matmul=0.640 ms
+
+--- FASTLANE 3× stats ---
+RAW G-MAC/s : mean=209666.00  ±41.19  (min=209629.66, max=209723.59)
+per_matmul_ms: mean=0.640  ±0.000  (min=0.640, max=0.640)
+
+----------------------------------------------------------------------------------------------------------------------
+CLOCK/POWER LOG (nvidia-smi) — single FASTLANE run with sampling
+----------------------------------------------------------------------------------------------------------------------
+Clock/power interpretation: (no samples / parse failed)
+
+----------------------------------------------------------------------------------------------------------------------
+NSIGHT COMPUTE CAPTURE (FASTLANE macro)
+----------------------------------------------------------------------------------------------------------------------
+[FL-1B] Collecting FASTLANE macro .ncu-rep via ncu …
+[FL-1B] Nsight macro capture available in: /content/fastlane_trust_pack/fastlane_macro.ncu-rep
+       (Open this .ncu-rep in Nsight Compute UI to inspect kernel-level metrics)
+
+----------------------------------------------------------------------------------------------------------------------
+PROVENANCE — environment + binaries + command lines
+----------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------
+DOCKERFILE + run_short.sh (FASTLANE quick repro)
+----------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------
+HUMAN SUMMARY (also written to fastlane_trust_pack.md)
+----------------------------------------------------------------------------------------------------------------------
+
+---
+## FASTLANE Trust Pack Summary
+_Generated: 2025-11-17T00:24:36+00:00_
+
+**Macro stability (3× FASTLANE runs, 5120×5120×5120 INT8→INT32):**
+
+- RAW G-MAC/s : mean=209666.00  ±41.19  (min=209629.66, max=209723.59)
+- per-matmul  : mean=0.640 ms  ±0.000  (min=0.640, max=0.640)
+- Derived RAW T-MAC/s ≈ 209.67  (RAW T-ops/s ≈ 419.33)
+
+**Clock/Power log:** sampled with `nvidia-smi` during one FASTLANE run.  
+_Interpretation:_ no samples / not available  
+_Tail of log (`fastlane_clocks_power_log.csv`):_
+
+```text
+2025/11/17 00:24:34.550, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 0 %, 0 %, 85.26 W
+2025/11/17 00:24:34.759, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 53 %, 8 %, 294.73 W
+2025/11/17 00:24:34.963, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 97 %, 29 %, 86.13 W
+2025/11/17 00:24:35.166, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 6 %, 0 %, 82.88 W
+2025/11/17 00:24:35.369, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 0 %, 0 %, 82.60 W
+2025/11/17 00:24:35.572, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 0 %, 0 %, 81.14 W
+2025/11/17 00:24:35.776, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 0 %, 0 %, 81.14 W
+2025/11/17 00:24:35.979, NVIDIA A100-SXM4-40GB, 0, P0, 1410 MHz, 1215 MHz, 0 %, 0 %, 80.82 W
+```
+
+**Nsight Compute capture (macro):**
+- Macro: `fastlane_macro.ncu-rep` (open in Nsight Compute UI to inspect kernel-level metrics)
+
+**Provenance (short view):**
+
+```json
+{
+  "timestamp_utc": "2025-11-17T00:24:35+00:00",
+  "binary": {
+    "path": "/content/fastlane_best_rr_allinone",
+    "sha256": "f058b8ee58c39ddcb6d05ee03d208df7c79dc449aa17fdafff53d60c79216dbd"
+  },
+  "nvcc_version_line": [
+    "nvcc: NVIDIA (R) Cuda compiler driver"
+  ],
+  "fastlane_cmd": "/content/fastlane_best_rr_allinone"
+}
+```
+Full provenance JSON: `fastlane_provenance.json`  
+
+**What these numbers are about:**
+- INT8×INT8→INT32 accumulate on a single A100-class GPU using cuBLASLt heuristics.
+- RAW G-MAC/s is the physical MAC rate for a 5120³ GEMM, using the standard `MACs = M·N·K` formula.
+- RAW GFLOP/s (or T-ops/s) uses `ops = 2·M·N·K` to count multiply+add as two operations.
+- EFFECTIVE (k-lanes) is an optional logical counting scheme used by the FASTLANE code (e.g., k=9) and is explicitly labeled.
+
+Additional correctness witnesses (e.g., CPU or GMP cross-checks) can be layered on in companion modules; this pack focuses on performance and environment reproducibility.
+
+**Repro (~1–2 minutes):** use the generated `Dockerfile_fastlane` and `run_short_fastlane.sh` in the `fastlane_trust_pack` directory.
+
+**Units:** MACs per GEMM = M·N·K, ops per GEMM = 2·M·N·K (ops in 10⁰; rates reported in G=10⁹ or T=10¹²).
+
+
+======================================================================================================================
+MODULE FL-1B — DONE (FASTLANE Trust Pack v2 in /content/fastlane_trust_pack)
+======================================================================================================================
+
+======================================================================================================================
+MODULE FL-2 — FASTLANE EXACTNESS WITNESS (INT8×INT8→INT32)
+======================================================================================================================
+
+[FL-2] Writing CUDA exactness-witness source -> /content/fastlane_exact_witness.cu
+[FL-2] Compiling with: nvcc -O3 -std=c++17 -gencode=arch=compute_80,code=sm_80 /content/fastlane_exact_witness.cu -lcublas -o /content/fastlane_exact_witness
+[FL-2] nvcc output:
+
+[FL-2] Compile OK -> /content/fastlane_exact_witness
+
+----------------------------------------------------------------------------------------------------------------------
+RUNNING FASTLANE EXACTNESS WITNESS (INT8×INT8→INT32)
+----------------------------------------------------------------------------------------------------------------------
+
+====================================================================================
+FASTLANE EXACTNESS WITNESS (INT8xINT8->INT32)
+====================================================================================
+
+--- Micro witness: M=N=K=256 (random int8 A,B) ---
+Micro 256^3: CPU vs GPU max |diff| = 0
+Micro check: all entries match exactly.
+
+--- Macro witness: M=N=K=5120, A=B=1 ---
+Allocating host+device buffers (A,B,C)...
+Macro 5120^3 GemmEx elapsed = 4.611 ms
+Copying C back to host for verification...
+Macro 5120^3: expected each entry = 5120
+Macro 5120^3 GPU max |C - expected| = 0
+Macro check: all entries match expected value exactly.
+
+FASTLANE INT8xINT8->INT32 exactness witness finished.
+====================================================================================
+
+[FL-2] Exactness witness completed successfully.
+
+======================================================================================================================
+MODULE FL-2 — DONE (FASTLANE INT8 Exactness Witness)
+======================================================================================================================
+
+======================================================================================================================
+MODULE FL-3E — FASTLANE EXACTNESS WITNESS v6 (INT8×INT8→INT32)
+======================================================================================================================
+
+[FL-3E] Writing CUDA exactness-witness v6 source -> /content/fastlane_exact_witness.cu
+[FL-3E] Compiling with: nvcc -O3 -std=c++17 -gencode=arch=compute_80,code=sm_80 /content/fastlane_exact_witness.cu -lcublas -o /content/fastlane_exact_witness
+[FL-3E] nvcc output:
+
+[FL-3E] Compile OK -> /content/fastlane_exact_witness
+
+----------------------------------------------------------------------------------------------------------------------
+RUNNING FASTLANE EXACTNESS WITNESS v6 (INT8×INT8→INT32)
+----------------------------------------------------------------------------------------------------------------------
+
+====================================================================================
+FASTLANE EXACTNESS WITNESS v6 (INT8xINT8->INT32)
+====================================================================================
+We test INT8×INT8→INT32 GEMM via cublasGemmEx on realistic GPU shapes.
+Formula: C(i,j) = sum_{k=0..K-1} A(i,k) * B(k,j), computed exactly in int32.
+We stay inside the safe range: max |C(i,j)| << 2^31, so no int32 overflow.
+
+--- Micro witness: M=N=K=256 (random int8 A,B) ---
+C(i,j) = sum_{k=0..255} A(i,k) * B(k,j), with A,B in [-128,127].
+CPU uses int64 accumulator; result stored as int32 (safe for this K).
+Micro 256^3: CPU vs GPU max |diff| = 0
+Micro check: all entries match exactly.
+
+Example micro equations (CPU = GPU):
+  C(0,0) = sum_{k=0..255} A(0,k)*B(k,0) = -59174  | GPU: -59174
+  C(13,7) = sum_{k=0..255} A(13,k)*B(k,7) = 15001  | GPU: 15001
+  C(255,42) = sum_{k=0..255} A(255,k)*B(k,42) = 107540  | GPU: 107540
+
+--- Edge-case equations (CPU-only demos) ---
+Edge 1: M=N=1, K=16, A=127, B=-128
+  C(0,0) = sum_{k=0..15} 127 * (-128) = 16 * (127 * -128) = -260096
+Edge 2: M=N=1, K=5120, A=127,  B=127
+  C(0,0) = sum_{k=0..K-1} A_val*B_val = 5120 * (127 * 127) = 82580480
+Edge 2: M=N=1, K=5120, A=127,  B=-127
+  C(0,0) = sum_{k=0..K-1} A_val*B_val = 5120 * (127 * -127) = -82580480
+Edge 2: M=N=1, K=5120, A=-128, B=-128
+  C(0,0) = sum_{k=0..K-1} A_val*B_val = 5120 * (-128 * -128) = 83886080
+
+--- Macro witness: M=N=K=5120, A=B=1 ---
+Here A(i,k)=1 and B(k,j)=1, so:
+  C(i,j) = sum_{k=0..K2-1} 1*1 = K2 = 5120 for all i,j.
+We verify that every entry of the GPU result equals 5120 exactly.
+Macro 5120^3 GemmEx elapsed = 4.610 ms
+Copying C back to host for verification...
+Macro 5120^3: expected each entry = 5120
+Macro 5120^3 GPU max |C - expected| = 0
+Macro check: all entries match expected value exactly.
+
+FASTLANE INT8xINT8->INT32 exactness witness v6 finished.
+====================================================================================
+
+[FL-3E] Exactness witness v6 completed successfully.
+
+======================================================================================================================
+MODULE FL-3E — DONE (FASTLANE INT8 Exactness Witness v6)
+======================================================================================================================
+
+======================================================================================================================
+MODULE FL-4 — FASTLANE ENV + PROVENANCE SNAPSHOT
+======================================================================================================================
+
+[FL-4] Writing CUDA env-report source -> /content/fastlane_env_report.cu
+[FL-4] Compiling with: nvcc -O2 -std=c++17 -gencode=arch=compute_80,code=sm_80 /content/fastlane_env_report.cu -lcublas -o /content/fastlane_env_report
+[FL-4] nvcc output:
+
+[FL-4] Compile OK -> /content/fastlane_env_report
+
+----------------------------------------------------------------------------------------------------------------------
+RUNNING FASTLANE ENV + PROVENANCE SNAPSHOT
+----------------------------------------------------------------------------------------------------------------------
+
+====================================================================================
+FASTLANE ENV + PROVENANCE SNAPSHOT
+====================================================================================
+CUDA versions:
+  Driver                 raw=12040  approx=12.4
+  Runtime                raw=12050  approx=12.5
+
+CUDA devices visible: 1
+Using device 0:
+  Name                  NVIDIA A100-SXM4-40GB
+  Compute capability    8.0
+  Total global memory   39.56 GB
+  MultiProcessor count  108
+  Max threads / block   1024
+  Warp size             32
+  Shared mem / block    48.0 KB
+  Max threads / SM      2048
+  Memory clock rate     1.215 GHz
+  Memory bus width      5120 bits
+  SM clock rate         1.410 GHz
+
+cuBLAS:
+  cuBLAS                 raw=120503  approx=120.50
+
+
+[FL-4] Env + provenance snapshot completed successfully.
+
+----------------------------------------------------------------------------------------------------------------------
+HOST TOOLCHAIN INFO (nvcc --version)
+----------------------------------------------------------------------------------------------------------------------
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Thu_Jun__6_02:18:23_PDT_2024
+Cuda compilation tools, release 12.5, V12.5.82
+Build cuda_12.5.r12.5/compiler.34385749_0
+
+
+======================================================================================================================
+MODULE FL-4 — DONE (FASTLANE ENV + PROVENANCE SNAPSHOT)
+======================================================================================================================
