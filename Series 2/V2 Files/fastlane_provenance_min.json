@@ -1,0 +1,11 @@
+{
+  "timestamp_utc": "2025-11-17T00:19:44+00:00",
+  "binary": {
+    "path": "/content/fastlane_best_rr_allinone",
+    "sha256": "9af22d21207567882cc65f9b12c1588dbbfa9c2f9e620f94eaddf9850c0802fc"
+  },
+  "nvcc_version_line": [
+    "nvcc: NVIDIA (R) Cuda compiler driver"
+  ],
+  "fastlane_cmd": "/content/fastlane_best_rr_allinone"
+}
