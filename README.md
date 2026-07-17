@@ -1,58 +1,94 @@
-# WarpFrac: An Exact Arithmetic Compute Architecture
+# WarpFrac
 
-_Last Updated: November 16, 2025_
+**Bit-for-bit exact integer matrix multiplication at Tensor Core speeds.**
 
-WarpFrac is an R&D architecture designed for **bit-for-bit exact rational arithmetic** at **high-performance (Tensor Core) speeds**.
+![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
+![Platform](https://img.shields.io/badge/GPU-NVIDIA_A100_(SM80)-76B900.svg)
+![Precision](https://img.shields.io/badge/Arithmetic-INT8%C3%97INT8%E2%86%92INT32_exact-informational.svg)
 
-This project is a new approach to scientific computing that rejects floating-point approximation. It was built to power a true "exact physics engine" for fundamental R&D, like my "Rosetta Stone of Physics" project.
+WarpFrac is a research project exploring **exact arithmetic on GPU hardware**. Floating-point GEMM is fast but approximate; arbitrary-precision CPU libraries (GMP) are exact but orders of magnitude too slow for large-scale compute. WarpFrac targets the gap between the two: NVIDIA Tensor Cores accelerate `INT8 × INT8 → INT32` multiply-accumulate, an operation that is **exact by construction** — no rounding, no error accumulation. Exact integer kernels managing the numerators and denominators of rational numbers are the foundation for an exact-rational compute pipeline.
 
----
-
-## The Core Problem: Speed vs. Exactness
-
-In modern science, we are forced to choose between two bad options:
-
-> **1. Speed (Floating-Point):** We use `FP64` or `FP32` for high-speed GPU computing. This is fast, but it's an **approximation**. Every operation introduces numerical error, and for complex, iterative, or chaotic systems, this error accumulates. We can never be sure if a strange result is a real discovery or a numerical artifact.
-
-> **2. Exactness (Arbitrary Precision):** We use CPU-based libraries like GMP. This is **bit-for-bit exact**, but it is **orders of magnitude too slow** for high-performance matrix compute, making it unusable for large-scale simulations.
-
-WarpFrac is designed to **eliminate this compromise**. It delivers both exactness and speed.
+Every performance claim in this repository ships with the artifacts needed to check it: source code, raw benchmark logs, Nsight Compute captures, clock/power logs, provenance JSON (compiler versions, binary checksums), and CPU/GMP exactness witnesses.
 
 ---
 
-## The WarpFrac Architecture
+## Measured Results
 
-WarpFrac is not a simple math library. It is a new kernel architecture designed to leverage hardware that is *already* exact.
+### Series 2 — current (A100-SXM4-40GB, 5120×5120×5120 GEMM, cuBLASLt)
 
-The core of the architecture is built on `INT8xINT8->INT32` matrix multiplication, an operation accelerated by NVIDIA Tensor Cores. Unlike floating-point operations, this integer-based multiply-accumulate is **fundamentally exact** and **does not lose information**.
+| Metric | Value | Evidence |
+|---|---|---|
+| Throughput (physical) | **209.8 T-MAC/s** (419.6 T-ops/s) | [`fastlane_macro_stats.json`](series-2/results/fastlane_macro_stats.json) |
+| Per-GEMM latency | 0.640 ms | 3 runs, σ ≈ 0.0005 ms |
+| Run-to-run variation | ±0.05% | min 209.69, max 209.97 T-MAC/s |
+| Fraction of A100 dense INT8 peak (312 T-MAC/s) | ~67% | — |
+| Exactness vs. CPU reference | **max \|diff\| = 0** | [`fastlane_exact_witness.cu`](series-2/src/fastlane_exact_witness.cu) |
 
-By building a pipeline that uses these exact integer kernels to manage the numerators and denominators of large rational numbers (fractions), WarpFrac can perform massive computations with **zero numerical error**.
+Throughput uses the standard accounting `MACs = M·N·K`, `ops = 2·M·N·K`, recomputed from measured device time. No logical multipliers are included in the headline numbers.
 
-The `Series 2` implementation, for example, has been formally benchmarked and verified:
+### Series 1 — original benchmark (A100-SXM4-40GB)
 
-* **Exact:** It is **bit-for-bit exact** against a CPU reference (`max |diff| = 0`).
-* **Fast:** It achieves a stable **~419 T-ops/s** (or ~210 T-MAC/s) on an NVIDIA A100.
-
-This proves that exact compute is not a "slow" novelty; it can be a high-performance, world-class reality.
-
----
-
-## Project Structure
-
-This repository is organized into distinct "Series" of development. Each series represents a major architectural iteration. Please see the `README.md` inside each folder for specific source code, benchmarks, and other info.
-
-###  Series 1: Logical TOPs (The OG)
-
-This is the original WarpFrac architecture. Its focus was on demonstrating that **fast and exact are not a tradeoff** anybody needs to accept. While its raw TMAC/s are lower, it established the foundation for the entire project.
-
-###  Series 2: High-Performance (The "Trust Pack")
-
-This is the current-generation, high-performance kernel. Its design was focused on further maximizing raw, physical **TMACs/GMACs** by optimizing for `INT8` GEMM performance.
+The original K-panel swarm harness demonstrated the exact INT8 path outperforming FP16 and TF32 baselines under identical accounting, with GMP witnesses confirming bit-for-bit correctness. A panel-counting error inflated its absolute throughput figures by 4×; this is documented in full in the [Series 1 errata](series-1/README.md#errata--panel-accounting) rather than quietly revised. Relative INT8-vs-FP comparisons are unaffected (all paths shared the same harness).
 
 ---
 
-## The Goal
+## Why exactness matters
 
-The goal of WarpFrac is to **eliminate numerical approximation as a variable in scientific discovery.**
+For iterative, chaotic, or long-running numerical systems, floating-point error accumulates and it becomes impossible to distinguish a real result from a numerical artifact. With an exact integer pipeline, any pattern in the output is a property of the model, not of the arithmetic. The benchmarks here include FP16/TF32 baselines run with realistic non-dyadic quantization scales, showing measurable floating-point rounding error (rel-L2 ≈ 3×10⁻⁴) where the INT32 path is exact.
 
-When a simulation or model runs on this architecture, any resulting pattern or anomaly is known, with 100% certainty, to be a feature of the *physics model itself*, not a ghost created by floating-point error.
+---
+
+## Repository layout
+
+```
+series-1/                      Original benchmark (Nov 2025)
+├── README.md                  Methodology, results, and errata
+├── A100_Benchmark_2025-11-06.ipynb
+├── src/                       CUDA sources + Dockerfile
+├── scripts/                   One-click benchmark & trust-pack drivers (Colab)
+└── results/                   Reports (MD/CSV/JSON), raw logs, verification docs
+
+series-2/                      Current benchmark, standard accounting (Nov 2025)
+├── README.md                  Methodology and build instructions
+├── WarpFrac_Series_2_2025-11-16.ipynb
+├── src/                       CUDA sources (bench, exactness witness, env report)
+├── scripts/                   One-click driver (Colab)
+└── results/                   Trust pack: stats, Nsight capture, clocks/power log,
+                               provenance JSON, raw output
+```
+
+## Reproducing the results
+
+**Google Colab (one click, A100 runtime):**
+- [Series 1 benchmark](https://colab.research.google.com/drive/1D-KihKFEz6qmU7R-mvba7VeievKudvQ8?usp=sharing)
+- [Series 2 benchmark](https://colab.research.google.com/drive/1L9GShHz_Hi0XmMPA7W52jtkAy9HEi9Yb?usp=sharing)
+
+**Locally (CUDA 12.x, A100 / SM80):**
+
+```bash
+cd series-2/src
+nvcc -O3 -std=c++17 -arch=sm_80 fastlane_best_rr_allinone.cu -lcublasLt -lcublas -o fastlane_bench
+./fastlane_bench                       # throughput
+nvcc -O3 -std=c++17 -arch=sm_80 fastlane_exact_witness.cu -lcublas -o witness
+./witness                              # bit-for-bit exactness vs CPU
+```
+
+Dockerfiles for a pinned environment are provided in each series' `src/` directory. See the per-series READMEs for the full verification workflow (Nsight metrics, clock sampling, GMP witnesses).
+
+## Verification methodology
+
+- **Exactness witnesses** — the same GEMM is computed on CPU (int64 accumulate, and GMP integers in Series 1) and compared element-wise against the GPU result; the pass criterion is `max |CPU − GPU| = 0`.
+- **Transparent ops accounting** — throughput is always recomputed from measured device time via `ops = 2·M·N·K`; conventions are documented in [`series-1/results/throughput_conventions.md`](series-1/results/throughput_conventions.md) and [`series-1/results/ops_accounting.md`](series-1/results/ops_accounting.md).
+- **Trust packs** — Nsight Compute captures, `nvidia-smi` clock/power logs sampled during runs, and provenance JSON with compiler versions and binary SHA-256 checksums.
+- **Device-side timing** — CUDA events (and CUDA Graph replays for amortized micro benchmarks), not host wall-clock.
+
+## Roadmap
+
+- **Series 3 (AVX2)** — a CPU backend using AVX2 integer SIMD, in development.
+- Rational (numerator/denominator) pipeline built on the exact integer kernels.
+
+## License & contact
+
+Licensed under [Apache 2.0](LICENSE).
+
+Questions, review, or collaboration: **ewesley541@gmail.com**. Independent validation is welcome — everything needed to replicate or falsify the claims above is in this repository.
