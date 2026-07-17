@@ -34,13 +34,17 @@ Throughput uses the standard accounting `MACs = M·N·K`, `ops = 2·M·N·K`, re
 
 ### Series 1 — original benchmark (A100-SXM4-40GB)
 
-The original K-panel swarm harness demonstrated the exact INT8 path outperforming FP16 and TF32 baselines under identical accounting, with GMP witnesses confirming bit-for-bit correctness. A panel-counting error inflated its absolute throughput figures by 4×; this is documented in full in the [Series 1 errata](series-1/README.md#errata--panel-accounting) rather than quietly revised. Relative INT8-vs-FP comparisons are unaffected (all paths shared the same harness).
+The original K-panel swarm harness demonstrated the exact INT8 path outperforming FP16 and TF32 baselines under identical accounting, with GMP witnesses confirming bit-for-bit correctness. A panel-counting error inflated its absolute throughput figures by 4×; this is documented in full in the [Series 1 errata](series-1/README.md#errata--panel-accounting). Relative INT8-vs-FP comparisons are unaffected (all paths shared the same harness).
 
 ---
 
 ## Why exactness matters
 
-For iterative, chaotic, or long-running numerical systems, floating-point error accumulates and it becomes impossible to distinguish a real result from a numerical artifact. With an exact integer pipeline, any pattern in the output is a property of the model, not of the arithmetic. The benchmarks here include FP16/TF32 baselines run with realistic non-dyadic quantization scales, showing measurable floating-point rounding error (rel-L2 ≈ 3×10⁻⁴) where the INT32 path is exact.
+For iterative, chaotic, or long-running numerical systems, floating-point error accumulates and it becomes impossible to distinguish a real result from a numerical artifact. 
+
+With an exact integer pipeline, any pattern in the output is a property of the model, not of the arithmetic.
+
+The benchmarks here include FP16/TF32 baselines run with realistic non-dyadic quantization scales, showing measurable floating-point rounding error (rel-L2 ≈ 3×10⁻⁴) where the INT32 path is exact.
 
 ---
 
