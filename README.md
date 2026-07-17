@@ -7,8 +7,11 @@
 ![Precision](https://img.shields.io/badge/Arithmetic-INT8%C3%97INT8%E2%86%92INT32_exact-informational.svg)
 
 WarpFrac is a research project exploring **exact arithmetic on GPU hardware**. 
+
 Floating-point GEMM is fast but approximate; arbitrary-precision CPU libraries (GMP) are exact but orders of magnitude too slow for large-scale compute. 
+
 WarpFrac targets the gap between the two: NVIDIA Tensor Cores accelerate `INT8 × INT8 → INT32` multiply-accumulate, an operation that is **exact by construction** — no rounding, no error accumulation. 
+
 Exact integer kernels managing the numerators and denominators of rational numbers are the foundation for an exact-rational compute pipeline.
 
 Every performance claim in this repository ships with the artifacts needed to check it: source code, raw benchmark logs, Nsight Compute captures, clock/power logs, provenance JSON (compiler versions, binary checksums), and CPU/GMP exactness witnesses.
