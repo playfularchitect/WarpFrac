@@ -1,0 +1,28 @@
+# Compiled binaries and build artifacts
+*.o
+*.obj
+*.so
+*.a
+*.exe
+fastlane_bench
+witness
+env_report
+fx
+series-*/src/fastlane_best_rr_allinone
+series-*/src/fastlane_exact_witness
+series-*/src/fastlane_env_report
+series-*/src/pb4_gmp_vs_gpu_micro
+series-*/src/pb6_micro_reps_graph
+series-*/src/pb_probe_env
+series-*/src/fx_int8_kpanel_tiled_swarm_v1
+
+# Archives
+*.tar.gz
+*.zip
+
+# Editor / OS noise
+.DS_Store
+.vscode/
+.idea/
+__pycache__/
+*.pyc
